@@ -6,20 +6,21 @@ import numpy as np
 import os
 
 app = Flask(__name__)
-CORS(app) # Enables cross-origin requests from frontend
+CORS(app)
 
-# Get the directory where THIS script resides
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+# 1. Resolve project root path robustly
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Check if model files are in current dir or parent dir
-scaler_path = os.path.join(CURRENT_DIR, 'scaler.pkl')
+scaler_path = os.path.join(BASE_DIR, 'scaler.pkl')
+model_path = os.path.join(BASE_DIR, 'model.pkl')
+
+# Fallback: check relative working directory if BASE_DIR fails
 if not os.path.exists(scaler_path):
-    scaler_path = os.path.join(os.path.dirname(CURRENT_DIR), 'scaler.pkl')
-
-model_path = os.path.join(CURRENT_DIR, 'model.pkl')
+    scaler_path = 'scaler.pkl'
 if not os.path.exists(model_path):
-    model_path = os.path.join(os.path.dirname(CURRENT_DIR), 'model.pkl')
+    model_path = 'model.pkl'
 
+# Load pickle files
 scaler = pickle.load(open(scaler_path, 'rb'))
 model = pickle.load(open(model_path, 'rb'))
 
@@ -45,6 +46,3 @@ def predict():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 400
-
-if __name__ == '__main__':
-    app.run(debug=False, use_reloader=False)
