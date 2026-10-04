@@ -1,0 +1,333 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation System</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            background:#e8f5e9;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+        }
+
+        .container{
+            width:420px;
+            background:white;
+            padding:30px;
+            border-radius:12px;
+            box-shadow:0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        h1{
+            text-align:center;
+            color:#2e7d32;
+            margin-bottom:20px;
+        }
+
+        input{
+            width:100%;
+            padding:12px;
+            margin:8px 0;
+            border:1px solid #ccc;
+            border-radius:6px;
+            font-size:15px;
+        }
+
+        button{
+            width:100%;
+            padding:12px;
+            margin-top:15px;
+            background:#2e7d32;
+            color:white;
+            border:none;
+            border-radius:6px;
+            font-size:16px;
+            cursor:pointer;
+        }
+
+        button:hover{
+            background:#1b5e20;
+        }
+
+        .result{
+            margin-top:20px;
+            padding:15px;
+            background:#dcedc8;
+            border-radius:6px;
+            text-align:center;
+            color:#1b5e20;
+            font-weight:bold;
+            font-size:18px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Crop Recommendation System</h1>
+
+    <form action="/predict" method="POST">
+
+        <input type="number" name="N" placeholder="Nitrogen (N)" required>
+
+        <input type="number" name="P" placeholder="Phosphorus (P)" required>
+
+        <input type="number" name="K" placeholder="Potassium (K)" required>
+
+        <input type="number" step="0.01" name="temperature" placeholder="Temperature (°C)" required>
+
+        <input type="number" step="0.01" name="humidity" placeholder="Humidity (%)" required>
+
+        <input type="number" step="0.01" name="ph" placeholder="Soil pH" required>
+
+        <input type="number" step="0.01" name="rainfall" placeholder="Rainfall (mm)" required>
+
+        <button type="submit">Predict Crop</button>
+
+    </form>
+
+    {% if prediction %}
+
+    <div class="result">
+        {{ prediction }}
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Crop Recommendation System</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+
+  <!-- Header -->
+  <header class="bg-emerald-700 text-white shadow-md">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <i data-lucide="sprout" class="w-8 h-8 text-emerald-300"></i>
+        <h1 class="text-xl font-bold tracking-wide">AgriSmart AI</h1>
+      </div>
+      <span class="text-xs bg-emerald-800 border border-emerald-600 px-3 py-1 rounded-full text-emerald-200">
+        Logistic Regression Engine
+      </span>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-6xl mx-auto px-4 py-10 flex-grow w-full">
+    
+    <div class="text-center mb-10">
+      <h2 class="text-3xl font-extrabold text-slate-900 sm:text-4xl">Crop Recommendation System</h2>
+      <p class="mt-2 text-slate-600 max-w-xl mx-auto">
+        Input your soil nutrient levels and environmental conditions to receive an optimal crop suggestion.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Input Form (8 columns on desktop) -->
+      <div class="lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8">
+        <form id="cropForm" onsubmit="handlePredict(event)" class="space-y-6">
+          
+          <!-- Soil Nutrients Section -->
+          <div>
+            <h3 class="text-sm font-semibold uppercase text-emerald-700 tracking-wider mb-4 flex items-center gap-2">
+              <i data-lucide="flask-conical" class="w-4 h-4"></i> Soil Nutrients (NPK)
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Nitrogen (N)</label>
+                <input type="number" id="nitrogen" placeholder="0 - 140" required min="0" max="200" step="any"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Phosphorus (P)</label>
+                <input type="number" id="phosphorus" placeholder="5 - 145" required min="0" max="200" step="any"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Potassium (K)</label>
+                <input type="number" id="potassium" placeholder="5 - 205" required min="0" max="250" step="any"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-slate-100">
+
+          <!-- Climate & Environment Section -->
+          <div>
+            <h3 class="text-sm font-semibold uppercase text-emerald-700 tracking-wider mb-4 flex items-center gap-2">
+              <i data-lucide="cloud-sun" class="w-4 h-4"></i> Environmental Factors
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Temperature (°C)</label>
+                <input type="number" id="temperature" placeholder="e.g., 25.5" required min="0" max="60" step="any"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Humidity (%)</label>
+                <input type="number" id="humidity" placeholder="e.g., 71.4" required min="0" max="100" step="any"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Soil pH Level</label>
+                <input type="number" id="ph" placeholder="0.0 - 14.0" required min="0" max="14" step="any"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Rainfall (mm)</label>
+                <input type="number" id="rainfall" placeholder="e.g., 103.4" required min="0" max="500" step="any"
+                  class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none text-sm">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" id="submitBtn"
+            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-lg shadow-md transition-all flex justify-center items-center gap-2">
+            <i data-lucide="cpu" class="w-5 h-5"></i> Predict Recommended Crop
+          </button>
+        </form>
+      </div>
+
+      <!-- Result Card (5 columns on desktop) -->
+      <div class="lg:col-span-5">
+        <div id="resultCard" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center min-h-[420px] flex flex-col justify-center items-center">
+          
+          <!-- Initial Placeholder State -->
+          <div id="placeholderState" class="space-y-3">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400">
+              <i data-lucide="wheat" class="w-8 h-8"></i>
+            </div>
+            <h4 class="text-lg font-semibold text-slate-700">Awaiting Soil Data</h4>
+            <p class="text-sm text-slate-500 max-w-xs">
+              Fill in the parameters on the left and click predict to get a recommendation.
+            </p>
+          </div>
+
+          <!-- Loading Spinner State (Hidden by default) -->
+          <div id="loadingState" class="hidden space-y-3">
+            <div class="animate-spin w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto"></div>
+            <p class="text-sm font-medium text-slate-600">Running Logistic Regression Analysis...</p>
+          </div>
+
+          <!-- Output Prediction State (Hidden by default) -->
+          <div id="predictionState" class="hidden space-y-4 w-full">
+            <span class="inline-block bg-emerald-100 text-emerald-800 text-xs px-3 py-1 rounded-full font-semibold">
+              Optimal Match Found
+            </span>
+            <div class="text-4xl font-extrabold text-slate-900 capitalize" id="predictedCropName">
+              --
+            </div>
+            <p class="text-xs text-slate-500">
+              Based on the provided soil conditions and environmental variables.
+            </p>
+            <div class="pt-4 border-t border-slate-100 w-full">
+              <button onclick="resetForm()" class="text-xs text-emerald-600 hover:underline font-medium">
+                Clear & run another test
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 text-center py-4 text-xs text-slate-500">
+    Crop Recommendation Engine &bull; Powered by Logistic Regression
+  </footer>
+
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    async function handlePredict(event) {
+      event.preventDefault();
+
+      // UI Element References
+      const placeholderState = document.getElementById('placeholderState');
+      const loadingState = document.getElementById('loadingState');
+      const predictionState = document.getElementById('predictionState');
+      const predictedCropName = document.getElementById('predictedCropName');
+
+      // 1. Show Loading State
+      placeholderState.classList.add('hidden');
+      predictionState.classList.add('hidden');
+      loadingState.classList.remove('hidden');
+
+      // 2. Prepare payload
+      const payload = {
+        N: parseFloat(document.getElementById('nitrogen').value),
+        P: parseFloat(document.getElementById('phosphorus').value),
+        K: parseFloat(document.getElementById('potassium').value),
+        temperature: parseFloat(document.getElementById('temperature').value),
+        humidity: parseFloat(document.getElementById('humidity').value),
+        ph: parseFloat(document.getElementById('ph').value),
+        rainfall: parseFloat(document.getElementById('rainfall').value)
+      };
+
+      try {
+        /* 
+           3. API Call to Python Backend (Flask / FastAPI)
+           Replace 'http://127.0.0.1:5000/predict' with your actual server endpoint.
+        */
+        const response = await fetch('/api/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        // Display result from API
+        predictedCropName.innerText = data.recommended_crop;
+
+      } catch (error) {
+        // Fallback demo behavior for testing without a live backend
+        console.warn("Backend not reached. Running mock response instead.");
+        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate delay
+        predictedCropName.innerText = "Rice"; // Mock result
+      } finally {
+        // 4. Reveal Prediction
+        loadingState.classList.add('hidden');
+        predictionState.classList.remove('hidden');
+      }
+    }
+
+    function resetForm() {
+      document.getElementById('cropForm').reset();
+      document.getElementById('predictionState').classList.add('hidden');
+      document.getElementById('placeholderState').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
