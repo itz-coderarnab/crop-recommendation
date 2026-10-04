@@ -294,29 +294,27 @@
         ph: parseFloat(document.getElementById('ph').value),
         rainfall: parseFloat(document.getElementById('rainfall').value)
       };
-
       try {
-        /* 
-           3. API Call to Python Backend (Flask / FastAPI)
-           Replace 'http://127.0.0.1:5000/predict' with your actual server endpoint.
-        */
         const response = await fetch('/api/predict', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        // Display result from API
-        predictedCropName.innerText = data.recommended_crop;
+      if (!response.ok) {
+      alert("Server Error: " + (data.error || "Prediction failed"));
+      return;
+      }
 
-      } catch (error) {
-        // Fallback demo behavior for testing without a live backend
-        console.warn("Backend not reached. Running mock response instead.");
-        await new Promise(resolve => setTimeout(resolve, 800)); // Simulate delay
-        predictedCropName.innerText = "Rice"; // Mock result
-      } finally {
+  // Display actual predicted crop from backend
+      predictedCropName.innerText = data.recommended_crop;
+
+     }catch (error) {
+        console.error("Fetch Failure:", error);
+        alert("Failed to reach the API endpoint. Check browser console.");
+     }finally {
         // 4. Reveal Prediction
         loadingState.classList.add('hidden');
         predictionState.classList.remove('hidden');
