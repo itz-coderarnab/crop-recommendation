@@ -182,28 +182,36 @@
         : '/api/predict';
 
       try {
-        const response = await fetch(API_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
+  const response = await fetch(API_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
 
-        const data = await response.json();
+  // Check if server returned non-JSON (e.g. HTML error page)
+  const contentType = response.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const rawText = await response.text();
+    console.error("Non-JSON Server Response:", rawText);
+    throw new Error(`Server returned HTML error (${response.status}). Check Vercel logs.`);
+  }
 
-        if (!response.ok) {
-          throw new Error(data.error || "Prediction server failed");
-        }
+  const data = await response.json();
 
-        predictedCropName.innerText = data.recommended_crop;
-        loadingState.classList.add('hidden');
-        predictionState.classList.remove('hidden');
+  if (!response.ok) {
+    throw new Error(data.error || "Prediction server failed");
+  }
 
-      } catch (error) {
-        console.error("Prediction Error:", error);
-        alert("API Error: " + error.message);
-        loadingState.classList.add('hidden');
-        placeholderState.classList.remove('hidden');
-      }
+  predictedCropName.innerText = data.recommended_crop;
+  loadingState.classList.add('hidden');
+  predictionState.classList.remove('hidden');
+
+} catch (error) {
+  console.error("Prediction Error:", error);
+  alert("API Error: " + error.message);
+  loadingState.classList.add('hidden');
+  placeholderState.classList.remove('hidden');
+}
     }
 
     function resetForm() {
