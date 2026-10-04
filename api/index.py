@@ -8,24 +8,31 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# 1. Resolve project root path robustly
+# Resolve project root path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 scaler_path = os.path.join(BASE_DIR, 'scaler.pkl')
 model_path = os.path.join(BASE_DIR, 'model.pkl')
 
-# Fallback: check relative working directory if BASE_DIR fails
+# Fallback path if running in working directory
 if not os.path.exists(scaler_path):
     scaler_path = 'scaler.pkl'
 if not os.path.exists(model_path):
     model_path = 'model.pkl'
 
-# Load pickle files
-scaler = pickle.load(open(scaler_path, 'rb'))
-model = pickle.load(open(model_path, 'rb'))
+try:
+    scaler = pickle.load(open(scaler_path, 'rb'))
+    model = pickle.load(open(model_path, 'rb'))
+except Exception as e:
+    scaler = None
+    model = None
+    load_error = str(e)
 
 @app.route('/api/predict', methods=['POST'])
 def predict():
+    if model is None or scaler is None:
+        return jsonify({'error': f'Model files failed to load: {load_error}'}), 500
+
     try:
         data = request.json
         
